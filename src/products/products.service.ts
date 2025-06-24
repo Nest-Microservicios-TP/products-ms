@@ -1,9 +1,9 @@
-import {HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {BadRequestException, HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PrismaClient } from 'generated/prisma';
 import { PaginationDto } from 'src/common';
 import { RpcException } from '@nestjs/microservices';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class ProductsService extends PrismaClient implements OnModuleInit{
@@ -22,6 +22,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit{
   }
 
   async findAll(paginationDto: PaginationDto) {
+
 
     const {page, limit} = paginationDto
     const totalPages = await this.product.count({ where: {available: true} })
@@ -96,4 +97,24 @@ export class ProductsService extends PrismaClient implements OnModuleInit{
 
     return product
   }
+
+
+  // async createCart(createUserCartDto: CreateUserCartDto) {
+  //   //Verifico si el producto existe
+  //   const product = await this.findOne(createUserCartDto.idProduct)
+
+  //   //Verifico si tiene stock
+  //   if(product.stock !< createUserCartDto.quantity){
+  //     throw new RpcException({
+  //       message: `Not Enough Stock of Product`,
+  //       status: HttpStatus.BAD_REQUEST
+  //     })
+  //   }
+
+  //   //Verifico si el usuario existe
+    
+
+  //   return product
+
+  // }
 }

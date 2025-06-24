@@ -35,4 +35,9 @@ export class ProductsController {
   remove(@Payload('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
+
+  // @MessagePattern({cmd: 'create_cart'})
+  // createCart(@Payload() createUserCartDto: CreateUserCartDto) {
+  //   return this.productsService.createCart(createUserCartDto);
+  // }
 }
