@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Cart` ADD COLUMN `bought` BOOLEAN NOT NULL DEFAULT true;

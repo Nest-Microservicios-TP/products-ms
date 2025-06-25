@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { IsNumber, IsPositive } from "class-validator"
+import { IsNumber, IsOptional, IsPositive } from "class-validator"
 
 export class CreateUserCartDto {
     @IsNumber()
@@ -18,4 +18,10 @@ export class CreateUserCartDto {
     @IsPositive()
     @Type(() => Number)
     quantity: number
+
+    @IsNumber()
+    @IsPositive()
+    @Type(() => Number)
+    @IsOptional()
+    totalPrice?: number
 }
