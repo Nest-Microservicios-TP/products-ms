@@ -99,22 +99,5 @@ export class ProductsService extends PrismaClient implements OnModuleInit{
   }
 
 
-  // async createCart(createUserCartDto: CreateUserCartDto) {
-  //   //Verifico si el producto existe
-  //   const product = await this.findOne(createUserCartDto.idProduct)
 
-  //   //Verifico si tiene stock
-  //   if(product.stock !< createUserCartDto.quantity){
-  //     throw new RpcException({
-  //       message: `Not Enough Stock of Product`,
-  //       status: HttpStatus.BAD_REQUEST
-  //     })
-  //   }
-
-  //   //Verifico si el usuario existe
-    
-
-  //   return product
-
-  // }
 }

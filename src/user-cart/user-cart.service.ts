@@ -4,14 +4,16 @@ import { UpdateUserCartDto } from './dto/update-user-cart.dto';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PrismaClient } from '@prisma/client';
 import { ProductsService } from 'src/products/products.service';
-import { AUTH_SERVICE } from 'src/config';
+import { AUTH_SERVICE, ORDER_SERVICE } from 'src/config';
 import { catchError, firstValueFrom } from 'rxjs';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class UserCartService extends PrismaClient implements OnModuleInit {
 
   constructor(
     @Inject(AUTH_SERVICE) private readonly userClient: ClientProxy,
+    @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy,
     private readonly productsService: ProductsService
   ) {
     super();
@@ -54,7 +56,7 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
     await this.productsService.update(createUserCartDto.idProduct, { stock: product.stock - createUserCartDto.quantity })
 
     //Creo el carrito y le agrego el total de lo que va a costar
-    return await this.cart.create({ data: {totalPrice: product.price * createUserCartDto.quantity ,...createUserCartDto} })
+    return await this.cart.create({ data: { totalPrice: product.price * createUserCartDto.quantity, ...createUserCartDto } })
   }
 
   async findAll() {
@@ -131,6 +133,14 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
   async remove(id: number) {
     const beforeCart = await this.findOne(id)
 
+    //Verifico si el carrito ya fue eliminado
+    if (!beforeCart.available) {
+      throw new RpcException({
+        message: `Cart Already Deleted`,
+        status: HttpStatus.BAD_REQUEST
+      })
+    }
+
     //Le devuelvo el stock al producto
     const product = await this.productsService.findOne(beforeCart.idProduct)
     await this.productsService.update(beforeCart.idProduct, { stock: product.stock + beforeCart.quantity })
@@ -147,7 +157,15 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
   }
 
   async buyCart(id: number) {
-    await this.findOne(id)
+    const beforeCart = await this.findOne(id)
+
+    //Verifico si el carrito ya fue comprado
+    if (!beforeCart.available) {
+      throw new RpcException({
+        message: `Cart Already Bougth`,
+        status: HttpStatus.BAD_REQUEST
+      })
+    }
 
     //Deshabilito el carrito y lo paso a comprado
     const cart = await this.cart.update({
@@ -159,6 +177,27 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
     })
 
     //Creo la factura
+
+    try {
+      const response = await firstValueFrom(
+        this.orderClient.send(
+          { cmd: 'createOrder' },
+          {
+            userId: cart.idUser,
+            productId: cart.idProduct,
+            quantity: cart.quantity,
+            totalPrice: cart.totalPrice,
+          },
+        ),
+      );
+
+
+    } catch (err) {
+      throw new RpcException({
+        message: 'Failed Creating Order',
+        status: HttpStatus.BAD_GATEWAY,
+      });
+    }
 
     return cart
   }

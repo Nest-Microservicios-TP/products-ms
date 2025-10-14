@@ -8,6 +8,8 @@ interface EnvVars {
     DATABASE_URL: string;
     AUTH_MS_HOST: string;
     AUTH_MS_PORT: number;
+    ORDER_MS_HOST: string;
+    ORDER_MS_PORT: number;
 }
 
 
@@ -16,6 +18,8 @@ const envsSchema = joi.object({
     DATABASE_URL: joi.string().required(),
     AUTH_MS_HOST: joi.string().required(),
     AUTH_MS_PORT: joi.number().required(),
+    ORDER_MS_HOST: joi.string().required(),
+    ORDER_MS_PORT: joi.number().required(),
 })
 .unknown(true);
 
@@ -33,4 +37,6 @@ export const envs = {
     databaseUrl:  envVars.DATABASE_URL,
     auth_ms_host: envVars.AUTH_MS_HOST,
     auth_ms_port: envVars.AUTH_MS_PORT,
+    order_ms_host: envVars.ORDER_MS_HOST,
+    order_ms_port: envVars.ORDER_MS_PORT,
 }

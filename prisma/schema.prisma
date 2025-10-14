@@ -33,7 +33,7 @@ model Cart {
   quantity   Int
   totalPrice Int @default(0)
   available  Boolean  @default(true)
-  bought  Boolean  @default(true)
+  bought  Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
