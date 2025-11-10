@@ -56,7 +56,9 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
     await this.productsService.update(createUserCartDto.idProduct, { stock: product.stock - createUserCartDto.quantity })
 
     //Creo el carrito y le agrego el total de lo que va a costar
-    return await this.cart.create({ data: { totalPrice: product.price * createUserCartDto.quantity, ...createUserCartDto } })
+    const totalPrice = product.price * createUserCartDto.quantity
+    createUserCartDto.totalPrice = totalPrice
+    return await this.cart.create({ data: { ...createUserCartDto } })
   }
 
   async findAll() {
@@ -97,7 +99,7 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
       });
     });
 
-    const carts = await this.cart.findMany({ where: { idUser } })
+    const carts = await this.cart.findMany({ where: { idUser, available: true } })
 
 
 
@@ -110,6 +112,8 @@ export class UserCartService extends PrismaClient implements OnModuleInit {
 
     return carts
   }
+
+
 
   async update(id: number, updateUserCartDto: UpdateUserCartDto) {
 

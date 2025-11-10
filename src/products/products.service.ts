@@ -30,7 +30,6 @@ export class ProductsService extends PrismaClient implements OnModuleInit{
     if(page && limit){
       const lastPage = Math.ceil(totalPages / limit)
 
-      console.log(page, limit)
 
       return {
         data: 

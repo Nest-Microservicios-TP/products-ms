@@ -27,6 +27,11 @@ export class UserCartController {
     return this.userCartService.findAllByUser(id);
   }
 
+  @MessagePattern({cmd: 'findAllUserCartByUserToken'})
+  findAllByUserToken(@Payload('id', ParseIntPipe) id: number) {
+    return this.userCartService.findAllByUser(id);
+  }
+
   @MessagePattern({cmd: 'removeUserCart'})
   remove(@Payload('id', ParseIntPipe) id: number) {
     return this.userCartService.remove(id);
